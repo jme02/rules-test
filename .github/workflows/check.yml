@@ -1,0 +1,19 @@
+name: Fail when merge commit present
+on: pull_request
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Fail if merge commit is present
+        run: |
+          if git log --merges --ancestry-path HEAD..origin/main | grep .; then
+            echo "Merge commit detected. Failing the workflow."
+            exit 1
+          else
+            echo "No merge commit detected. Proceeding with the workflow."
+          fi
